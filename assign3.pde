@@ -5,6 +5,7 @@ int clickCount; // 共點了幾格
 int flagCount; // 共插了幾支旗
 int nSlot; // 分割 nSlot*nSlot格
 int totalSlots; // 總格數
+int slotState;
 final int SLOT_SIZE = 100; //每格大小
 
 int sideLength; // SLOT_SIZE * nSlot
@@ -38,7 +39,6 @@ void setup(){
 
   nSlot = 4;
   totalSlots = nSlot*nSlot;
-  // 初始化二維陣列
   slot = new int[nSlot][nSlot];
   
   sideLength = SLOT_SIZE * nSlot;
@@ -85,7 +85,15 @@ void draw(){
 
 int countNeighborBombs(int col,int row){
   // -------------- Requirement B ---------
-  return 0;
+  int countneighbor=0;
+  for(int i=col-1;i<=col+1;i++){
+     for(int j=row-1;j<=row+1;j++){
+      if((i!=-1)&&(i!=4)&&(j!=-1)&&(j!=4)){
+       if(slot[i][j]==2||slot[i][j]==4||slot[i][j]==5) countneighbor++;
+      }             
+     }
+  }
+  return countneighbor;
 }
 
 void setBombs(){
@@ -97,7 +105,24 @@ void setBombs(){
   }
   // -------------- put your code here ---------
   // randomly set bombs
+  
+   int n=0;
+   int[] c=new int[bombCount];
+   int[] r=new int[bombCount];
+   while(n<bombCount){
+     c[n]=int ( random(4));
+     r[n] =int ( random(4));
+     if(slot[c[n]][r[n]]!=SLOT_BOMB){
+       slot[c[n]][r[n]]=SLOT_BOMB;
+       n++;
+     }
+   }
 
+   for (int col=0; col < nSlot; col++){
+    for (int row=0; row < nSlot; row++){
+      if(slot[col][row]!=SLOT_BOMB) slot[col][row] = SLOT_SAFE;
+    }
+   }
   // ---------------------------------------
 }
 
@@ -159,7 +184,7 @@ void mouseClicked(){
        // println (num);
        bombCount = num;
        
-       // start the game
+       // start the gamemousePressed()
        clickCount = 0;
        flagCount = 0;
        setBombs();
@@ -174,9 +199,38 @@ void mousePressed(){
        mouseY >= iy && mouseY <= iy+sideLength){
     
     // --------------- put you code here -------     
-
-    // -------------------------
-    
+  int i,j;
+  mouseX=int((mouseX-ix)/100);
+  mouseY=int((mouseY-iy)/100);
+  if(slot[mouseX][mouseY]==1){
+     showSlot(mouseX,mouseY,SLOT_SAFE);
+     clickCount++;
+     if(clickCount==totalSlots-bombCount){
+        gameState = GAME_WIN;
+        for(i=0;i<4;i++){
+          for(j=0;j<4;j++){
+            if(slot[i][j]==1)showSlot(i,j,SLOT_SAFE);
+            else if(slot[i][j]==2)showSlot(i,j,SLOT_BOMB);
+          }
+        }
+      }
+      else{
+        gameState = GAME_RUN;
+      }
+  }
+  else if(slot[mouseX][mouseY]==2){
+     showSlot(mouseX,mouseY,SLOT_BOMB);
+     gameState = GAME_LOSE;
+     slot[mouseX][mouseY]=5;
+     for(i=0;i<4;i++){
+      for(j=0;j<4;j++){
+         if(slot[i][j]==1)showSlot(i,j,SLOT_SAFE);
+         else if(slot[i][j]==2)showSlot(i,j,SLOT_BOMB);
+         else if(slot[i][j]==5)showSlot(i,j,SLOT_DEAD);         
+      }
+     }
+  }
+    // -------------------------  
   }
 }
 
