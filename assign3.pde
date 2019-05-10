@@ -12,10 +12,10 @@ int ix; // (width - sideLength)/2
 int iy; // (height - sideLength)/2
 
 // game state
-final int GAME_START = 1;
-final int GAME_RUN = 2;
-final int GAME_WIN = 3;
-final int GAME_LOSE = 4;
+final int GAME_START = 1;//
+final int GAME_RUN = 2;//
+final int GAME_WIN = 3;//
+final int GAME_LOSE = 4;//
 int gameState;
 
 // slot state for each slot
@@ -35,8 +35,8 @@ void setup(){
   flag=loadImage("data/flag.png");
   cross=loadImage("data/cross.png");
   bg=loadImage("data/bg.png");
-
-  nSlot = 4;
+  
+  nSlot = 4;//4*4 size
   totalSlots = nSlot*nSlot;
   // 初始化二維陣列
   slot = new int[nSlot][nSlot];
@@ -48,7 +48,7 @@ void setup(){
   gameState = GAME_START;
 }
 
-void draw(){
+void draw(){//graphic
   switch (gameState){
     case GAME_START:
           background(180);
@@ -67,8 +67,8 @@ void draw(){
           break;
     case GAME_RUN:
           //---------------- put you code here ----
-
-          // -----------------------------------
+         //clickCount
+         // -----------------------------------
           break;
     case GAME_WIN:
           textSize(18);
@@ -85,6 +85,19 @@ void draw(){
 
 int countNeighborBombs(int col,int row){
   // -------------- Requirement B ---------
+   /*int nx=(mouseX-ix)/SLOT_SIZE;
+   int ny=(mouseY-iy)/SLOT_SIZE;
+   if (nx>=4){
+      nx=3;
+      }
+   if (ny>=4){
+      ny=3;
+      }  
+  for(int nx-1,nx+1,){
+  for(ny-1,ny+1,){
+  if 
+  }
+  }*/
   return 0;
 }
 
@@ -93,10 +106,19 @@ void setBombs(){
   for (int col=0; col < nSlot; col++){
     for (int row=0; row < nSlot; row++){
       slot[col][row] = SLOT_OFF;
-    }
+  }
   }
   // -------------- put your code here ---------
   // randomly set bombs
+     for(int A =0; A<bombCount;A++){
+    int x = int(random(4));
+    int y = int(random(4));
+    if (slot[x][y]== SLOT_OFF){
+     slot[x][y]=SLOT_BOMB;
+    } else if(slot[x][y]== SLOT_BOMB){
+      A = A--;
+    }
+  }
 
   // ---------------------------------------
 }
@@ -173,11 +195,38 @@ void mousePressed(){
        mouseX >= ix && mouseX <= ix+sideLength && 
        mouseY >= iy && mouseY <= iy+sideLength){
     
-    // --------------- put you code here -------     
-
+    // --------------- put you code here -------
+       
+       int mx=(mouseX-ix)/SLOT_SIZE;
+       int my=(mouseY-iy)/SLOT_SIZE;
+       if (mx>=4){
+         mx=3;
+       }
+        if (my>=4){
+         my=3;
+       }  
+       //if mouseX Y=bomb show pictures
+       if (slot[mx][my]==SLOT_BOMB){//press "2" lose 
+       showSlot(mx,my,SLOT_DEAD);
+       gameState = GAME_LOSE;//switch "lose state"
+       }
+       else
+       {
+         clickCount++;
+         showSlot(mx,my,SLOT_SAFE);
+         System.out.println("slot[mx][my]:"+slot[mx][my]);
+         if(bombCount==totalSlots-clickCount)
+         {gameState = GAME_WIN;}
+       }
+     
+     
+     
+       
+       
     // -------------------------
     
   }
+  
 }
 
 // press enter to start
@@ -187,3 +236,5 @@ void keyPressed(){
      gameState = GAME_START;
   }
 }
+
+
